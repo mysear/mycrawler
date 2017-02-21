@@ -9,9 +9,6 @@ from bs4 import BeautifulSoup
 class MySpider(CrawlSpider):
     name = 'myspider'
     allowed_domains = ['zhongyoo.com']
-#    keyword="中药药材"
-#    urlBaidu = "http://www.baidu.com/s?wd="+keyword
-#    urlBaidu="http://www.zhongyoo.com/name/"
     start_urls = ['http://www.zhongyoo.com/name/']
 
     def medicine_content(soupMedic):
@@ -29,16 +26,10 @@ class MySpider(CrawlSpider):
         data = response.body
         soup = BeautifulSoup(data)
 
-        print soup
-
-    i["title"]=soup.title.string
-    for link in soup.find_all('link'):
-          i["link"]=link['href']
-      break
-    i["content"]=soup.title.string
-
-    for string in soup.stripped_strings:
-      print (repr(string))
-    print "content:",i["content"]," link:", i["link"], " title:",i["title"]
+        for name in soup.find_all("div", class_="sp"):
+            i["title"]=name.find("strong").a.string
+            i["content"]=name.p.string
+            i["link"]=name.find("strong").a['href']
+            print ("content:",i["content"]," link:", i["link"], " title:",i["title"])
         return i
 
