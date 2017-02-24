@@ -21,18 +21,52 @@ class MySpider(CrawlSpider):
         i = MyCrawlerItem()
 
         conten_part = soup.find("div", class_="gaishu")
-        print ("content:", conten_part)
-#        i["title"] = conten_part.find("div", class_="title").h1.string
-#        print ("title:", i["title"])
-#        description = conten_part.find("div", class_="text")
-#        for content in description.find_all("p") :
-#            name = content.strong.string
-#            if name == "中药名":
-#                print("中药名：", name)
-#            elif name == "别名":
-#                print("别名：", name)
+        i["title"] = conten_part.find("div", class_="title").h1.string
+        i["link"] = ""
+        i["content"] = ""
+
+        print ("title:", i["title"])
+        description = conten_part.find("div", class_="text")
+        for content in description.find_all("p") :
+            key = content.find("strong")
+            if key == None:
+              continue
+
+            name = key.string
+            if name == "中药名":
+#                i["content"] = content.string
+                print("medicine:", name)
+            elif name == "别名":
+#                i["link"] = content.string
+                print("alias:", name)
+            elif name == "英文名":
+                 print("englishname:", name)
+            elif name == "来源":
+                 print("from:", name)
+            elif name == "植物形态":
+                 print("status:", name)
+            elif name == "产地分布":
+                 print("producing area:", name)
+            elif name == "采收加工":
+                 print("gather and reproduce:", name)
+            elif name == "药材性状":
+                 print("apperace:", name)
+            elif name == "性味归经":
+                 print("smell:", name)
+            elif name == "功效与作用":
+                 print("function:", name)
+            elif name == "临床应用":
+                 print("useage:", name)
+            elif name == "药理研究":
+                 print("research:", name)
+            elif name == "化学成分":
+                 print("chemical component:", name)
+            elif name == "使用禁忌":
+                 print("use forbidden:", name)
+            elif name == "配伍药方":
+                 print("prescription:", name)
 #            else:
-#                print ("name:", name)
+#                print ("others:", name)
 
         yield i
 
@@ -45,7 +79,7 @@ class MySpider(CrawlSpider):
         #i['name'] = response.xpath('//div[@id="name"]').extract()
         #i['description'] = response.xpath('//div[@id="description"]').extract()
         data = response.body
-        soup = BeautifulSoup(data)
+        soup = BeautifulSoup(data, "html5lib")
 
         for name in soup.find_all("div", class_="sp"):
 #            i["title"]=name.find("strong").a.string
@@ -55,4 +89,3 @@ class MySpider(CrawlSpider):
             url = name.find("strong").a['href']
             self.log('Acess url: %s' % url)
             yield scrapy.Request(url, callback=self.parse_item)
-
