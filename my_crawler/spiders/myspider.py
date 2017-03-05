@@ -11,81 +11,106 @@ class MySpider(CrawlSpider):
     allowed_domains = ['zhongyoo.com']
     start_urls = ['http://www.zhongyoo.com/name/']
 
-    def medicine_content(soupMedic):
-         print(soupMedic)
-         return 0
 
     def parse_item(self, response):
         data = response.body
-        soup = BeautifulSoup(data, "lxml")
-        i = MyCrawlerItem()
+        soup = BeautifulSoup(data, "html5lib")
+        item = MyCrawlerItem()
+        item['nameCh'] = ""
+        item['namePin'] = ""
+        item['alias'] = ""
+        item['nameEng'] = ""
+        item['source'] = ""
+        item['description'] = ""
+        item['area'] = ""
+        item['gather'] = ""
+        item['shape'] = ""
+        item['taste'] = ""
+        item['effect'] = ""
+        item['application'] = ""
+        item['pharmacology'] = ""
+        item['component'] = ""
+        item['tatoo'] = ""
+        item['prescription'] = ""
 
         conten_part = soup.find("div", class_="gaishu")
-        i["title"] = conten_part.find("div", class_="title").h1.string
-        i["link"] = ""
-        i["content"] = ""
-
-        print ("title:", i["title"])
+        if conten_part == None:
+          return
         description = conten_part.find("div", class_="text")
+        print ("text:", description)
         for content in description.find_all("p") :
-            key = content.find("strong")
-            if key == None:
+            if content == None:
               continue
+            else:
+              key = content.find("strong")
+              if key == None:
+                continue
 
+#            print ("所有内容:", content)
+            str = ""
+            str = content.get_text().strip()
+            strCont = str[str.find("】") + 1:].strip()
             name = key.string
             if name == "中药名":
-#                i["content"] = content.string
-                print("medicine:", name)
+                [nameCh, namePin] = strCont.split(' ')
+                item['nameCh'] = nameCh.strip()
+                item['namePin'] = namePin.strip()
+#                print("++++++++++中药名:", item['nameCh'], item['namePin'])
             elif name == "别名":
-#                i["link"] = content.string
-                print("alias:", name)
+                item['alias'] = strCont
+#                print("++++++++++别名:", item['alias'])
             elif name == "英文名":
-                 print("englishname:", name)
+                item['nameEng'] = strCont
+#                print("++++++++++英文名:", item['nameEng'])
             elif name == "来源":
-                 print("from:", name)
+                item['source'] = strCont
+#                print("++++++++++来源:", item['source'])
             elif name == "植物形态":
-                 print("status:", name)
+                item['description'] = strCont
+#                print("++++++++++植物形态:", item['description'])
             elif name == "产地分布":
-                 print("producing area:", name)
+                item['area'] = strCont
+#                print("++++++++++产地分布:", item['area'])
             elif name == "采收加工":
-                 print("gather and reproduce:", name)
+                item['gather'] = strCont
+#                print("++++++++++采收加工:", item['gather'])
             elif name == "药材性状":
-                 print("apperace:", name)
+                item['shape'] = strCont
+#                print("++++++++++药材性状:", item['shape'])
             elif name == "性味归经":
-                 print("smell:", name)
+                item['taste'] = strCont
+#                print("++++++++++性味归经:", item['taste'])
             elif name == "功效与作用":
-                 print("function:", name)
+                item['effect'] = strCont
+#                print("++++++++++功效与作用:", item['effect'])
             elif name == "临床应用":
-                 print("useage:", name)
+                item['application'] = strCont
+#                print("++++++++++临床应用:", item['application'])
             elif name == "药理研究":
-                 print("research:", name)
+                item['pharmacology'] = strCont
+#                print("++++++++++药理研究:", item['pharmacology'])
             elif name == "化学成分":
-                 print("chemical component:", name)
+                item['component'] = strCont
+#                print("++++++++++化学成分:", item['component'])
             elif name == "使用禁忌":
-                 print("use forbidden:", name)
-            elif name == "配伍药方":
-                 print("prescription:", name)
+                item['tatoo'] = strCont
+#                print("++++++++++使用禁忌:", item['tatoo'])
+            elif name == "配伍药方" or name == "相关药方":
+                item['prescription'] = strCont
+#                print("++++++++++配伍药方:", item['prescription'])
 #            else:
 #                print ("others:", name)
-
-        yield i
+        yield item
 
 
     #从scrapy框架继承，加入处理流程
     def parse(self, response):
         self.log('A response from %s just arrived!' % response.url)
-        #i = {}
-        #i['domain_id'] = response.xpath('//input[@id="sid"]/@value').extract()
-        #i['name'] = response.xpath('//div[@id="name"]').extract()
-        #i['description'] = response.xpath('//div[@id="description"]').extract()
+
         data = response.body
         soup = BeautifulSoup(data, "html5lib")
 
         for name in soup.find_all("div", class_="sp"):
-#            i["title"]=name.find("strong").a.string
-#            i["content"]=name.p.string
-#            i["link"]=name.find("strong").a['href']
-#            print ("content:",i["content"]," link:", i["link"], " title:",i["title"])
             url = name.find("strong").a['href']
             self.log('Acess url: %s' % url)
             yield scrapy.Request(url, callback=self.parse_item)
