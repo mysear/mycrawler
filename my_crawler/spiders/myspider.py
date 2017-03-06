@@ -102,6 +102,14 @@ class MySpider(CrawlSpider):
 #                print ("others:", name)
         yield item
 
+    def parse_zhongyao(self, response):
+      data = response.body
+      soup = BeautifulSoup(data, "html5lib")
+
+      for name in soup.find_all("div", class_="sp"):
+        url = name.find("strong").a['href']
+        self.log('Acess url: %s' % url)
+        yield scrapy.Request(url, callback=self.parse_item)
 
     #从scrapy框架继承，加入处理流程
     def parse(self, response):
@@ -110,7 +118,8 @@ class MySpider(CrawlSpider):
         data = response.body
         soup = BeautifulSoup(data, "html5lib")
 
-        for name in soup.find_all("div", class_="sp"):
-            url = name.find("strong").a['href']
-            self.log('Acess url: %s' % url)
-            yield scrapy.Request(url, callback=self.parse_item)
+        pageInfo = soup.find("ul", class_="pagelist").find("span", class_="pageinfo").get_text()
+        lastPage = int(pageInfo[pageInfo.find("共")+1:pageInfo.find("页")])
+        for i in range(1, lastPage + 1):
+          urlReq="http://www.zhongyoo.com/name/page_" + str(i) + ".html"
+          yield scrapy.Request(urlReq, callback=self.parse_zhongyao)
