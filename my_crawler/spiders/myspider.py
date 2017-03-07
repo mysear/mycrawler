@@ -6,7 +6,7 @@ from scrapy.spiders import CrawlSpider, Rule
 
 from my_crawler.items import MyCrawlerItem
 from bs4 import BeautifulSoup
-import zhongyoo
+from . import zhongyoo
 
 class MySpider(CrawlSpider):
     name = 'myspider'

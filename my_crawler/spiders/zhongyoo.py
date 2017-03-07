@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from bs4 import BeautifulSoup
 from my_crawler.items import MyCrawlerItem
+from . import pinyin
 
 def parse_zhongyoo(data):
     soup = BeautifulSoup(data, "html5lib")
@@ -65,20 +67,23 @@ def parse_zhongyoo_item(data):
       #关键字为"药名"或"中药名"
       if name.find("药名") != -1:
 #       [nameCh, namePin] = strCont.split(' ')
-        strCont.replace('；','')
-        print(content)
-        print(content.get_text())
+        strCont = strCont.replace('；','').replace('’','').replace('\'','')
+#        print(content)
+#        print(content.get_text())
         if strCont.find(' ') == -1:
             item['nameCh'] = strCont.strip()
+            item['namePin'] = pinyin.hanzi2pinyin(string=item['nameCh'])
         else:
             item['nameCh'] = strCont[:strCont.find(' ')].strip()
             item['namePin'] = strCont[strCont.find(' ')+1:].strip()
-        print("++++++++++中药名:", item['nameCh'], item['namePin'])
+#        print (os.getcwd())
+#        print("拼音测试:",pinyin.hanzi2pinyin(string=item['nameCh']))
+#        print("++++++++++中药名:", item['nameCh'], item['namePin'])
       elif name.find("别名") != -1:
         item['alias'] = strCont
 #         print("++++++++++别名:", item['alias'])
       elif name.find("英文名") != -1:
-        item['nameEng'] = strCont
+        item['nameEng'] = strCont.replace('；','').replace('’','').replace('\'','')
 #        print("++++++++++英文名:", item['nameEng'])
       elif name.find("来源") != -1:
         item['source'] = strCont
@@ -111,8 +116,7 @@ def parse_zhongyoo_item(data):
       #关键字为"化学成分"或"主要成分"
       elif name.find("成分") != -1:
         print(content.get_text())
-        strCont.replace('；','')
-        item['component'] = strCont
+        item['component'] = strCont.replace('；','').replace('’','').replace('\'','')
         print("++++++++++化学成分:", item['component'])
       elif name.find("使用禁忌") != -1:
         item['tatoo'] = strCont
