@@ -10,12 +10,13 @@
 #__all__ = ["PinYin"]
 
 import os.path
-#from . import word
+import sys
+import unicodedata
 
 word_dict = {}
 
 def load_word():
-    dict_file = os.getcwd() + '\my_crawler\spiders\word.data'
+    dict_file = os.getcwd() + '/my_crawler/spiders/word.data'
     if not os.path.exists(dict_file):
         raise IOError("NotFoundFile")
 
@@ -54,8 +55,20 @@ def hanzi2pinyin_split(string="", split=""):
 #    if split == "":
 #        return result
 #    else:
-     return split.join(result)
+    return split.join(result)
 
+def yinfu2pinyin(string=''):
+    '''
+    通过使用dict.fromkeys() 方法构造一个字典，每个Unicode 和音符作为键，对于的值全部为None
+    然后使用unicodedata.normalize() 将原始输入标准化为分解形式字符
+    sys.maxunicode : 给出最大Unicode代码点的值的整数，即1114111（十六进制的0x10FFFF）。
+    unicodedata.combining:将分配给字符chr的规范组合类作为整数返回。 如果未定义组合类，则返回0。
+    '''
+#    cmb_chrs = dict.fromkeys(c for c in range(sys.maxunicode) if unicodedata.combining(chr(c))) #此
+    cmb_chrs = dict.fromkeys(c for c in range(sys.maxunicode) if unicodedata.combining(unichr(c)))
+    newStr = unicodedata.normalize('NFD', string.decode('utf-8'))
+    newStr = newStr.translate(cmb_chrs)
+    return newStr
 
 #if __name__ == "__main__":
 #    test = PinYin()

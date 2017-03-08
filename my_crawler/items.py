@@ -26,4 +26,5 @@ class MyCrawlerItem(scrapy.Item):
     component = scrapy.Field()
     tatoo = scrapy.Field()
     prescription = scrapy.Field()
+    url = scrapy.Field()
     pass
