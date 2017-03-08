@@ -20,9 +20,9 @@ class MySpider(CrawlSpider):
 
         if response.url.find("www.zhongyoo.com/name/page_"):
             pages = zhongyoo.parse_zhongyoo_page(data)
-	    print("level 2 count:", len(pages))
+#            print("level 2 count:", len(pages))
             for i in range(0, len(pages)):
-                print(pages[i])
+#                print(pages[i])
                 yield scrapy.Request(pages[i], callback=self.parse_item)
         else:
             pass

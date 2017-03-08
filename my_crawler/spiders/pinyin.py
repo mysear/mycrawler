@@ -15,13 +15,26 @@ import unicodedata
 
 word_dict = {}
 
+def search_file(inputname, search_path=os.environ['PATH'], pathsep=os.pathsep):
+    for parent,dirnames,filenames in os.walk(search_path):
+        for filename in filenames:
+            if filename == inputname:
+                fullpath = os.path.join(parent, inputname)
+                return fullpath
+        for dirname in dirnames:
+            res = search_file(inputname, dirname)
+            if res != None:
+               return res
+
 def load_word():
-    dict_file = os.getcwd() + '/my_crawler/spiders/word.data'
-    if not os.path.exists(dict_file):
+    dict_file = 'word.data'
+    file_path = search_file(dict_file, os.getcwd())
+    print(file_path, os.getcwd())
+    if not os.path.exists(file_path):
         raise IOError("NotFoundFile")
 
-#    with file(dict_file) as f_obj:
-    with open(dict_file) as f_obj:
+#    with file(file_path) as f_obj:
+    with open(file_path) as f_obj:
         for f_line in f_obj.readlines():
             try:
                 line = f_line.split('    ')
@@ -29,7 +42,6 @@ def load_word():
             except:
                 line = f_line.split('   ')
                 word_dict[line[0]] = line[1]
-
 
 def hanzi2pinyin(string=""):
     load_word()
@@ -64,9 +76,13 @@ def yinfu2pinyin(string=''):
     sys.maxunicode : 给出最大Unicode代码点的值的整数，即1114111（十六进制的0x10FFFF）。
     unicodedata.combining:将分配给字符chr的规范组合类作为整数返回。 如果未定义组合类，则返回0。
     '''
-#    cmb_chrs = dict.fromkeys(c for c in range(sys.maxunicode) if unicodedata.combining(chr(c))) #此
-    cmb_chrs = dict.fromkeys(c for c in range(sys.maxunicode) if unicodedata.combining(unichr(c)))
-    newStr = unicodedata.normalize('NFD', string.decode('utf-8'))
+    newStr = ""
+    if 2 == sys.version_info[0]:
+      cmb_chrs = dict.fromkeys(c for c in range(sys.maxunicode) if unicodedata.combining(unichr(c)))
+      newStr = unicodedata.normalize('NFD', string.decode('utf-8'))
+    else:
+      cmb_chrs = dict.fromkeys(c for c in range(sys.maxunicode) if unicodedata.combining(chr(c)))
+      newStr = unicodedata.normalize('NFD', string)
     newStr = newStr.translate(cmb_chrs)
     return newStr
 

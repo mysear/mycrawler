@@ -49,7 +49,7 @@ def parse_zhongyoo_item(data, url):
 
     conten_part = soup.find("div", class_="gaishu")
     if conten_part == None:
-      print("No find gaishu in ", url)
+#      print("No find gaishu in ", url)
       return
 
     aliasFlag = False
@@ -138,15 +138,12 @@ def parse_zhongyoo_item(data, url):
 #        print("++++++++++使用禁忌:", item['tatoo'])
       #关键字为"配伍药方"或"相关药方"
       elif name.find("配伍药方") != -1 or name.find("相关药方") != -1:
-#        item['prescription'] = strCont
         for tagP in content.find_next_siblings("p"):
           strTag = tagP.get_text().strip()
-#          print(strTag)
           if strTag == "" or strTag.find("相关推荐文章") != -1:
             break
-	  else:
-	    strCont = strCont + strTag
-
+          else:
+            strCont = strCont + strTag
         item['prescription'] = strCont.replace(';','').replace('\'','')
 #        print("++++++++++配伍药方:", item['prescription'])
       else:
