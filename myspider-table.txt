@@ -1,0 +1,20 @@
+CREATE TABLE `myspider` (
+  `namePin` varchar(200) NOT NULL,
+  `nameCh` varchar(20) NOT NULL,
+  `nameEng` varchar(500) NOT NULL,
+  `alias` text,
+  `source` text,
+  `description` text,
+  `area` text,
+  `gather` text,
+  `shape` text,
+  `taste` text,
+  `effect` text,
+  `application` text,
+  `pharmacology` text,
+  `component` text,
+  `tatoo` text,
+  `prescription` text,
+   url text,
+  PRIMARY KEY (`namePin`,`nameCh`)
+) DEFAULT CHARSET=gbk;
