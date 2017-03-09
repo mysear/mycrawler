@@ -51,7 +51,6 @@ class MyCrawlerPipeline(object):
                 values('"+namePin+"','"+nameCh+"','"+nameEng+"','"+alias+"','"+source+"', \
                 '"+description+"','"+area+"','"+gather+"','"+shape+"','"+taste+"','"+effect+"', \
                 '"+application+"','"+pharmacology+"','"+component+"','"+tatoo+"','"+prescription+"','"+url+"')"
-#           print(sql)
            self.exeSQL(sql)
         except Exception as er:
            print("插入错误，错误如下：")

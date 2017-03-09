@@ -29,7 +29,6 @@ def search_file(inputname, search_path=os.environ['PATH'], pathsep=os.pathsep):
 def load_word():
     dict_file = 'word.data'
     file_path = search_file(dict_file, os.getcwd())
-    print(file_path, os.getcwd())
     if not os.path.exists(file_path):
         raise IOError("NotFoundFile")
 
