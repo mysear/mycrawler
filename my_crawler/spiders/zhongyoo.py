@@ -69,34 +69,41 @@ def parse_zhongyoo_item(data, url):
       name = key.string
       #关键字为"药名"或"中药名"
       if name.find("药名") != -1 or name.find("中药名") != -1:
-        print(content.get_text())
-        strCont = strCont.replace('；','').replace('’','').replace('\'','')
-        if strCont.find(' ') == -1:
-            item['nameCh'] = strCont.strip()
-            item['namePin'] = pinyin.hanzi2pinyin(string=item['nameCh'])
+        strCont = strCont.replace('；','').replace('’','').replace('\'','').replace('&nbsp;',' ')
+        print(strCont.decode('utf-8'))
+        if strCont.find(' ') != -1:
+          item['nameCh'] = strCont[:strCont.find(' ')].strip()
+          item['namePin'] = pinyin.yinfu2pinyin(string=strCont[strCont.find(' ')+1:].strip().replace(' ',''))
         else:
-            item['nameCh'] = strCont[:strCont.find(' ')].strip()
-            item['namePin'] = pinyin.yinfu2pinyin(string=strCont[strCont.find(' ')+1:].strip().replace(' ',''))
+          item['nameCh'] = strCont.strip()
+          res = ""
+          for alphat in pinyin.hanzi2pinyin(string=item['nameCh']):
+            res=res+alphat
+          item['namePin'] = res
+          print("Get pinyin from name:", res)
+        print("Pinyin:", item['namePin'])
         #直接汉字转拼音，不再使用获取到的拼音，可能有误
 #        if strCont.find(' ') == -1:
 #          item['nameCh'] = strCont.strip()
 #        else:
 #          item['nameCh'] = strCont[:strCont.find(' ')].strip()
-#        item['namePin'] = pinyin.hanzi2pinyin(string=item['nameCh'])
+#        namePin = pinyin.hanzi2pinyin(string=item['nameCh'])
+#        for character in namePin:
+#          item['namePin'].append(character)
 #        print("++++++++++中药名:", item['nameCh'], item['namePin'])
       #有英文名写成别名的，判断是否已经获取过别名，如果获取过当前即为英文名
       elif name.find("别名") != -1:
         if aliasFlag == False:
-          print(content.get_text())
+#          print(content.get_text())
           item['alias'] = strCont
           aliasFlag = True
-          print("alias:", item['alias'])
+#          print("alias:", item['alias'])
         else:
           item['nameEng'] = strCont.replace('；','').replace('’','').replace('\'','')
-          print("Englishname:", item['nameEng'])
+#          print("Englishname:", item['nameEng'])
 #         print("++++++++++别名:", item['alias'])
       elif name.find("英文名") != -1:
-        print(content.get_text())
+#        print(content.get_text())
         item['nameEng'] = strCont.replace('；','').replace('’','').replace('\'','')
 #        print("++++++++++英文名:", item['nameEng'])
       elif name.find("来源") != -1:
