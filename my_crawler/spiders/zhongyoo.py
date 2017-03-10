@@ -65,9 +65,10 @@ def parse_zhongyoo_item(data, url):
         strTmp = content.get_text().strip()
         strCont = strTmp[strTmp.find("】") + 1:].strip()
         name = key.string
-        #关键字为"药名"或"中药名" html含有$nsbp表示的空格需要替换，用\xa0表示
+        #关键字为"药名"或"中药名" html含有$nsbp表示的空格需要替换，使用unicodedata.normalize处理
         if name.find("药名") != -1 or name.find("中药名") != -1:
-            strCont = strCont.replace('；','').replace('’','').replace('\'','').replace('\xa0',' ')
+            strCont = strCont.replace('；','').replace('’','').replace('\'','')
+            strCont = unicodedata.normalize("NFKD",strCont)
             if strCont.find(' ') != -1:
                 item['nameCh'] = strCont[:strCont.find(' ')].strip()
                 #对读音为ye的字转码时会转成xue
