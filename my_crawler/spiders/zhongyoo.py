@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+import unicodedata
 from bs4 import BeautifulSoup
 from my_crawler.items import MyCrawlerItem
 from . import pinyin
