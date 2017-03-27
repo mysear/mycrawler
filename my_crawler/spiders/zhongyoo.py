@@ -14,7 +14,7 @@ def parse_zhongyoo(data):
     pageList = []
     for i in range(1, lastPage + 1):
         urlReq="http://www.zhongyoo.com/name/page_" + str(i) + ".html"
-        pageList.append("http://www.zhongyoo.com/name/page_" + str(i) + ".html")
+        pageList.append(urlReq)
     return pageList
 
 def parse_zhongyoo_page(data):
@@ -22,12 +22,12 @@ def parse_zhongyoo_page(data):
 
     pageList = []
     for name in soup.find_all("div", class_="sp"):
-        url = name.find("strong").a['href']
-        pageList.append(url)
+        urlReq = name.find("strong").a['href']
+        pageList.append(urlReq)
     return pageList
 
-def parse_zhongyoo_item(data, url):
-    print("Get resp from:", url)
+def parse_zhongyoo_item(data, urlReq):
+    print("Get resp from:", urlReq)
     soup = BeautifulSoup(data, "html5lib")
     item = MyCrawlerItem()
     item['nameCh'] = ""
@@ -46,7 +46,7 @@ def parse_zhongyoo_item(data, url):
     item['component'] = ""
     item['tatoo'] = ""
     item['prescription'] = ""
-    item['url'] = url
+    item['url'] = urlReq
 
     conten_part = soup.find("div", class_="gaishu")
     if conten_part == None:

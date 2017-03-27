@@ -7,11 +7,13 @@ from scrapy.spiders import CrawlSpider, Rule
 from my_crawler.items import MyCrawlerItem
 from bs4 import BeautifulSoup
 from . import zhongyoo
+from . import zhongyaofang21nx
 
 class MySpider(CrawlSpider):
     name = 'myspider'
     allowed_domains = ['zhongyoo.com']
-    start_urls = ['http://www.zhongyoo.com/name/']
+    start_urls = ['http://www.zhongyoo.com/name/',
+                  'http://www.21nx.com/zhongyaofang/']
 
 
     def parse_second_level(self, response):
@@ -20,6 +22,10 @@ class MySpider(CrawlSpider):
 
         if response.url.find("www.zhongyoo.com/name/page_"):
             pages = zhongyoo.parse_zhongyoo_page(data)
+            for i in range(0, len(pages)):
+                yield scrapy.Request(pages[i], callback=self.parse_item)
+        elif response.url.find("http://www.21nx.com/zhongyaofang/index"):
+            pages = zhongyaofang21nx.parse_zhongyaofang21nx_page(data)
             for i in range(0, len(pages)):
                 yield scrapy.Request(pages[i], callback=self.parse_item)
         else:
@@ -31,6 +37,10 @@ class MySpider(CrawlSpider):
         if response.url.find("www.zhongyoo.com"):
             item = zhongyoo.parse_zhongyoo_item(data, response.url)
             yield item
+        elif response.url.find("http://www.21nx.com/zhongyaofang"):
+#            item = zhongyaofang21nx.parse_zhongyaofang21nx(data, response.url)
+#            yield item
+            pass
         else:
             pass
 
@@ -41,6 +51,9 @@ class MySpider(CrawlSpider):
 
         if response.url.find("www.zhongyoo.com"):
             pages = zhongyoo.parse_zhongyoo(data)
+            for i in range(0, len(pages)):
+                yield scrapy.Request(pages[i], callback=self.parse_second_level)
+        elif response.url.find("www.21nx.com"):
             for i in range(0, len(pages)):
                 yield scrapy.Request(pages[i], callback=self.parse_second_level)
         else:
