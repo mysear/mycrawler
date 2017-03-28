@@ -8,9 +8,11 @@ from . import pinyin
 def parse_zhongyaofang21nx(data):
     soup = BeautifulSoup(data, "html5lib")
 
+#    pageInfo = soup.find("div", class_="qq").find("div", class_="Q1").find("div", class_="Lbt").find_all("a")
+    pageInfo = soup.find("div", class_="Lbt").find_all("a")
     pageList = []
-    for page in soup.find("div", class_="qq").find("div", class_="Q1").find("div", class_="Lbt").find_all("a"):
-        urlReq="www.21nx.com/zhongyaofang/" + page.get('href').get_text()
+    for page in pageInfo:
+        urlReq="www.21nx.com/zhongyaofang/" + page.get('href')
         print(urlReq)
         pageList.append(urlReq)
     return pageList

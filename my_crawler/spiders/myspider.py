@@ -12,19 +12,19 @@ from . import zhongyaofang21nx
 class MySpider(CrawlSpider):
     name = 'myspider'
     allowed_domains = ['zhongyoo.com']
-    start_urls = ['http://www.zhongyoo.com/name/',
-                  'http://www.21nx.com/zhongyaofang/']
-
+#    start_urls = ['http://www.zhongyoo.com/name/',
+#                  'http://www.21nx.com/zhongyaofang/']
+    start_urls = ['http://www.21nx.com/zhongyaofang/']
 
     def parse_second_level(self, response):
         self.log('Second level response from %s just arrived!' % response.url)
         data = response.body
 
-        if response.url.find("www.zhongyoo.com/name/page_"):
+        if response.url.find("www.zhongyoo.com/name/page_") != -1:
             pages = zhongyoo.parse_zhongyoo_page(data)
             for i in range(0, len(pages)):
                 yield scrapy.Request(pages[i], callback=self.parse_item)
-        elif response.url.find("http://www.21nx.com/zhongyaofang/index"):
+        elif response.url.find("http://www.21nx.com/zhongyaofang/index") != -1:
             pages = zhongyaofang21nx.parse_zhongyaofang21nx_page(data)
             for i in range(0, len(pages)):
                 yield scrapy.Request(pages[i], callback=self.parse_item)
@@ -34,10 +34,10 @@ class MySpider(CrawlSpider):
     def parse_item(self, response):
         self.log('Parse item get response from %s just arrived!' % response.url)
         data = response.body
-        if response.url.find("www.zhongyoo.com"):
+        if response.url.find("www.zhongyoo.com") != -1:
             item = zhongyoo.parse_zhongyoo_item(data, response.url)
             yield item
-        elif response.url.find("http://www.21nx.com/zhongyaofang"):
+        elif response.url.find("http://www.21nx.com/zhongyaofang") != -1:
 #            item = zhongyaofang21nx.parse_zhongyaofang21nx(data, response.url)
 #            yield item
             pass
@@ -49,11 +49,12 @@ class MySpider(CrawlSpider):
         self.log('A response from %s just arrived!' % response.url)
         data = response.body
 
-        if response.url.find("www.zhongyoo.com"):
+        if response.url.find("www.zhongyoo.com") != -1:
             pages = zhongyoo.parse_zhongyoo(data)
             for i in range(0, len(pages)):
                 yield scrapy.Request(pages[i], callback=self.parse_second_level)
-        elif response.url.find("www.21nx.com"):
+        elif response.url.find("www.21nx.com") != -1:
+            pages = zhongyaofang21nx.parse_zhongyaofang21nx(data)
             for i in range(0, len(pages)):
                 yield scrapy.Request(pages[i], callback=self.parse_second_level)
         else:
