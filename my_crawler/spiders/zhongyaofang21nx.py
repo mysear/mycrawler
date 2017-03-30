@@ -12,7 +12,7 @@ def parse_zhongyaofang21nx(data):
     pageInfo = soup.find("div", class_="Lbt").find_all("a")
     pageList = []
     for page in pageInfo:
-        urlReq="www.21nx.com/zhongyaofang/" + page.get('href')
+        urlReq="http://www.21nx.com/zhongyaofang/" + page.get('href')
         print(urlReq)
         pageList.append(urlReq)
     return pageList
@@ -51,6 +51,6 @@ def parse_zhongyaofang21nx_item(data, urlReq):
 
     conten_part = soup.find("div", class_="gaishu")
     if conten_part == None:
-        return
+        return item
 
-    return
+    return item

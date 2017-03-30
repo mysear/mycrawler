@@ -11,7 +11,7 @@ from . import zhongyaofang21nx
 
 class MySpider(CrawlSpider):
     name = 'myspider'
-    allowed_domains = ['zhongyoo.com']
+    allowed_domains = ['zhongyoo.com', '21nx.com']
 #    start_urls = ['http://www.zhongyoo.com/name/',
 #                  'http://www.21nx.com/zhongyaofang/']
     start_urls = ['http://www.21nx.com/zhongyaofang/']
@@ -38,9 +38,9 @@ class MySpider(CrawlSpider):
             item = zhongyoo.parse_zhongyoo_item(data, response.url)
             yield item
         elif response.url.find("http://www.21nx.com/zhongyaofang") != -1:
-#            item = zhongyaofang21nx.parse_zhongyaofang21nx(data, response.url)
-#            yield item
-            pass
+            item = zhongyaofang21nx.parse_zhongyaofang21nx_item(data, response.url)
+            yield item
+#            pass
         else:
             pass
 
@@ -56,6 +56,7 @@ class MySpider(CrawlSpider):
         elif response.url.find("www.21nx.com") != -1:
             pages = zhongyaofang21nx.parse_zhongyaofang21nx(data)
             for i in range(0, len(pages)):
+#                print("Get url:", pages[i])
                 yield scrapy.Request(pages[i], callback=self.parse_second_level)
         else:
             pass
